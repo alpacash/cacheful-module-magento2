@@ -7,6 +7,9 @@ after your website cache has been flushed. This way the first page load for
 every request is handled by the server, so that no actual visitor has to
 deal with delay in page load.
 
+## Install with Composer
+`composer require cacheful/magento2-module`
+
 ## Quick start in 5 steps
 - Create a free account [on cacheful](https://cacheful.app).
 - Create your first team and project.
