@@ -3,6 +3,7 @@
 namespace Cacheful\Client\Console\Command;
 
 use Cacheful\Client\Service\TriggerProcessService;
+use GuzzleHttp\Exception\GuzzleException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -17,11 +18,6 @@ class TriggerCommand extends Command
      * @var \Magento\Framework\App\State
      */
     protected $state;
-
-    /**
-     * @var \Pon\BikeFinanceLease\Service\Queue\QueueProcessorService
-     */
-    protected $queueProcessor;
 
     /**
      * @var \Cacheful\Client\Service\TriggerProcessService
@@ -58,13 +54,22 @@ class TriggerCommand extends Command
      * @param \Symfony\Component\Console\Input\InputInterface   $input
      * @param \Symfony\Component\Console\Output\OutputInterface $output
      *
-     * @return void
-     * @throws \Exception
+     * @return int
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->triggerProcessService->execute();
+        $output->writeln("Sending cache warm-up request to the server...");
+
+        try {
+            $this->triggerProcessService->execute();
+
+            return 0;
+        } catch (\Exception | GuzzleException $e) {
+            $output->writeln("<error>{$e->getMessage()}</error>");
+
+            return 1;
+        }
     }
 }

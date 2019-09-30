@@ -2,6 +2,7 @@
 
 namespace Cacheful\Client\Service;
 
+use Cacheful\Client\Exception\CachefulConfigException;
 use GuzzleHttp\Client;
 use Psr\Log\LoggerInterface;
 
@@ -47,6 +48,8 @@ class TriggerProcessService
      * Execute process trigger.
      *
      * @return bool
+     * @throws \Cacheful\Client\Exception\CachefulConfigException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function execute()
     {
@@ -54,7 +57,7 @@ class TriggerProcessService
         $token = $this->configService->getApiToken();
 
         if (empty($projectId) || empty($token)) {
-            return false;
+            throw new CachefulConfigException("Project ID and token aren't configured yet.");
         }
 
         $requestUrl = sprintf(self::REQUEST_URI, $projectId);
@@ -71,7 +74,7 @@ class TriggerProcessService
         } catch (\GuzzleHttp\Exception\GuzzleException $e) {
             $this->logger->error($e->getMessage());
 
-            return false;
+            throw $e;
         }
     }
 }

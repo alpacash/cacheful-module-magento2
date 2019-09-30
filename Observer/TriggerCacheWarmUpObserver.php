@@ -4,6 +4,7 @@ namespace Cacheful\Client\Observer;
 
 use Cacheful\Client\Service\ConfigService;
 use Cacheful\Client\Service\TriggerProcessService;
+use GuzzleHttp\Exception\GuzzleException;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Message\ManagerInterface;
@@ -57,12 +58,11 @@ class TriggerCacheWarmUpObserver implements ObserverInterface
             return;
         }
 
-        if ($this->triggerProcessService->execute()) {
+        try {
+            $this->triggerProcessService->execute();
             $this->messageManager->addSuccessMessage("Successfully triggered cache warm-up!");
-
-            return;
+        } catch (\Exception | GuzzleException $e) {
+            $this->messageManager->addErrorMessage("Something went wrong while triggering the cache warm-up.");
         }
-
-        $this->messageManager->addErrorMessage("Something went wrong while triggering the cache warm-up.");
     }
 }
