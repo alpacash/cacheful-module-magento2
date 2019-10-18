@@ -54,7 +54,7 @@ class TriggerCacheWarmUpObserver implements ObserverInterface
      */
     public function execute(Observer $observer)
     {
-        if (!$this->configService->shouldTriggerAfterFlush()) {
+        if (\php_sapi_name() === 'cli' || ! $this->configService->shouldTriggerAfterFlush()) {
             return;
         }
 
